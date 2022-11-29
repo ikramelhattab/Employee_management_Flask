@@ -46,5 +46,5 @@ Copy the content from the file `.sample-env` to the new created `.env` file.
 
 **Step 5. Run the server**
 ```
-$ flask run index.js
+$ flask run 
 ```
