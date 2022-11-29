@@ -1,0 +1,5 @@
+{% for user in users %}
+<div class="todo">
+    <p>{{ user['username'] }}  {{ user['email'] }} <i>{{ user['password']}}</i></p>
+</div>
+{% endfor %}
