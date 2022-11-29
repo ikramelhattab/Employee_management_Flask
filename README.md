@@ -9,7 +9,7 @@ You can find installation instructions on the official docs [here](https://docs.
 ```
 # clone the github repo
 
-$ git clone 'https://github.com/Smart-Logger/tarsier-backend'
+$ git clone 'https://github.com/ikramelhattab/Aura.se_Tech_Interv.git
 
 # navigate to the project directory
 $ cd 'tarsier-backend'
