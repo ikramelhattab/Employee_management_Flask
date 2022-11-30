@@ -9,7 +9,7 @@ You can find installation instructions on the official docs [here](https://docs.
 ```
 # clone the github repo
 
-$ git clone 'https://github.com/Smart-Logger/tarsier-backend'
+$ git clone 'https://github.com/ikramelhattab/Aura.se_Tech_Interv.git
 
 # navigate to the project directory
 $ cd 'Technical_Interview_Ikram_Hattab'
@@ -46,5 +46,5 @@ Copy the content from the file `.sample-env` to the new created `.env` file.
 
 **Step 5. Run the server**
 ```
-$ flask run index.js
+$ flask run 
 ```
