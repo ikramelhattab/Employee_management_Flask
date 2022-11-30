@@ -5,6 +5,7 @@ import bcrypt
 
 
 app = Flask(__name__)
+app.secret_key = "testing"
 
 client = MongoClient('localhost', 27017)
 
@@ -47,11 +48,12 @@ def registration():
     return render_template('registration.html')
 
 
+#######Login#######
 @app.route("/login", methods=["POST", "GET"])
 def login():
     message = 'Please login to your account'
     if "email" in session:
-        return redirect(url_for("logged_in"))
+        return redirect(url_for("list_users"))
 
     if request.method == "POST":
         email = request.form.get("email")
@@ -65,10 +67,10 @@ def login():
             
             if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
                 session["email"] = email_val
-                return redirect(url_for('logged_in'))
+                return redirect(url_for('list_users'))
             else:
                 if "email" in session:
-                    return redirect(url_for("logged_in"))
+                    return redirect(url_for("list_users"))
                 message = 'Wrong password'
                 return render_template('login.html', message=message)
         else:
@@ -121,7 +123,7 @@ if __name__ == "__main__":
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
 
-    session.init_app(app)
+   # session.init_app(app)
 
     app.debug = True
     app.run()

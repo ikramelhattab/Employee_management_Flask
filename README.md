@@ -12,13 +12,13 @@ You can find installation instructions on the official docs [here](https://docs.
 $ git clone 'https://github.com/Smart-Logger/tarsier-backend'
 
 # navigate to the project directory
-$ cd 'tarsier-backend'
+$ cd 'Technical_Interview_Ikram_Hattab'
 
-# create the virtual environment for MFlix
-python3 -m venv mflix_venv
+# create the virtual environment 
+python3 -m venv base
 
 # activate the virtual environment
-source mflix_venv/bin/activate
+source base/bin/activate
 ```
 
 **Step 2. Install dependencies**

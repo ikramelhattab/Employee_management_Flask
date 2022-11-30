@@ -1,5 +1,25 @@
-{% for user in users %}
-<div class="todo">
-    <p>{{ user['username'] }}  {{ user['email'] }} <i>{{ user['password']}}</i></p>
+{% extends "base.html" %}
+{% block title %}Users List{% endblock %}
+
+{% block content %}
+
+
+<div class="login-container">
+    <div class="login-form">
+<table>
+    <thead><tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+</thead>
+    <tbody>
+        {% for user in users %}
+
+    <tr><td>{{ user['name'] }} </td><td> {{ user['email'] }}</td></tr>
+    {% endfor %}
+
+    </tbody>
+    </table>
 </div>
-{% endfor %}
+</div>
+{% endblock %}
