@@ -111,8 +111,8 @@ def login():
 
 
 
-@app.route('/profile', methods=('GET', 'POST'))
-def profile():
+@app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
+def show_user_profile(id):
     
   if request.method == "GET":
     
@@ -121,10 +121,11 @@ def profile():
         print("*****",userId)
 
         # get the user details from the db
-        user = users.find_one({"_id":ObjectId(userId)})
+        user = users.find_one({"_id":ObjectId(id)})
+        print("*****",user)
 
         # direct to edit user page
-        return render_template('profile.html',user=user)  
+        return render_template('show-user-profile.html',user=user)  
     
   elif request.method == "POST":
     
@@ -139,7 +140,7 @@ def profile():
         users.update_one({"_id":ObjectId(userId)},{"$set":{"password":password}})
 
         # redirect to home page
-        return render_template('profile.html',user=user)  
+        return render_template('show-user-profile.html',user=user)  
 
 
 
@@ -174,8 +175,8 @@ def list_users():
 
 #show-user-profile page 
 
-@app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
-def show_user_profile(id):
+@app.route('/profile/<id>', methods=('GET', 'POST'))
+def profile(id):
     if request.method=='POST':
        users.update_one({"_id": ObjectId(id)},
                   { "$set": {
@@ -183,7 +184,7 @@ def show_user_profile(id):
                               "password": request.form.get('password'),
                              }
                  })
-    return render_template('show-user-profile.html')
+    return render_template('profile.html')
 
 
 
