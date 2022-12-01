@@ -14,9 +14,6 @@ client = MongoClient('localhost', 27017)
 db = client.Technical_Interview
 users = db.users
 
-a = db.users.find()
-len = len(list(a))
-
 
 ####### Registration#######
 
@@ -86,40 +83,34 @@ def login():
     return render_template('login.html', message=message)
 
 
-####### Show User Profile #######
 
-@app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
-def show_user_profile(id):
+####### Profile #######
 
+@app.route('/profile', methods=('GET', 'POST'))
+def profile():
     if request.method == "GET":
-
-        # get the id of the user to edit
-        userId = request.args.get('form')
-        print("*****====", userId)
+        #  get the id of the user to edit
+        email = session["email"]
 
         # get the user details from the db
-        user = users.find_one({"_id": ObjectId(id)})
-        print("*****okay", user)
+        user = users.find_one({"email": email})
 
         # direct to edit user page
-        return render_template('show-user-profile.html', user=user)
+        return render_template('profile.html', user=user)
 
     elif request.method == "POST":
 
         # get the data of the user
         userId = request.form['_id']
-        print("*****44", userId)
 
         password = request.form['password']
-        print("*****55", password)
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         # update the data in the db
         user = users.update_one({"_id": ObjectId(userId)}, {
                                 "$set": {"password": hashed}})
 
-        # redirect to show user profile page
-        return render_template('show-user-profile.html', user=user)
+        return render_template('profile.html', user=user)
 
 
 ####### list of users #######
@@ -130,107 +121,80 @@ def list_users():
     return render_template('list-users.html', users=all_users)
 
 
-####### Profile #######
+####### Show User Profile #######
 
-@app.route('/profile', methods=('GET', 'POST'))
-def profile():
+@app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
+def show_user_profile(id):
+
     if request.method == "GET":
-        #  get the id of the user to edit
-      #  userId = request.args.get('form')
-        email = session["email"]
 
-        print("*****====", email)
+        # get the id of the user to edit
+        userId = request.args.get('form')
 
         # get the user details from the db
-        user = users.find_one({"email": email})
-        print("*****okay", user)
+        user = users.find_one({"_id": ObjectId(id)})
 
         # direct to edit user page
-        return render_template('profile.html', user=user)
+        return render_template('show-user-profile.html', user=user)
 
     elif request.method == "POST":
 
         # get the data of the user
         userId = request.form['_id']
-        print("*****44", userId)
 
         password = request.form['password']
-        print("*****55")
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         # update the data in the db
         user = users.update_one({"_id": ObjectId(userId)}, {
                                 "$set": {"password": hashed}})
 
-        return render_template('profile.html', user=user)
+        # redirect to show user profile page
+        return render_template('show-user-profile.html', user=user)
+
 
 
 ####### Send money  #######
 
 @app.route('/send-money/', methods=('GET', 'POST'))
 def send_money():
-    
-    
-    if request.method == "GET":
-        
-        email =  session["email"]
-        
 
-        print("*****====", email)
+    if request.method == "GET":
+
+        email = session["email"]
         users = db.users
 
         # get the user details from the db
-        user = users.find()
-        print("*****okay", user)
+        user = users.find_one({'email': email})
 
         # direct to edit user page
-        return render_template('send-money.html',user=user)
+        return render_template('send-money.html', user=user)
 
     elif request.method == "POST":
 
         # get the data of the user
-        userId = request.form['_id']        
+        userId = request.form['_id']
 
         balanceAdded = request.form['balance']
         newBalance = int(100) + int(balanceAdded)
-        
+
         # update the data in the db
         users = db.users
         user = users.update_one({"_id": ObjectId(userId)}, {
-                                 "$set": {"balance": newBalance}})
-        
-        users_list = list(users.find())
-        users_list_name = (users_list[2])
-        users = db.users["name"]
-      
-        
-        name = request.form['name']  # form input on initial position
+            "$set": {"balance": newBalance}})
 
-        check_db = users.find()  # check all documents in collection
+        users = db.users["name"]
+
+        name = request.form['name']  # form input on initial name
+
+        check_db = users.find()  # check  document in collection
         for i in check_db:
-             if (name in i['name']):
-        #         print("2",name)
-                 return render_template('send-money.html',user=user)
-             else:
-                 return 'sorry route not found'
+            if (name in i['name']):
+                return render_template('send-money.html', user=user)
+            else:
+                return 'sorry name not found'
 
         return render_template('send-money.html', user=user)
-        
-     
-
-
-       
-
-
-# logged_in page
-
-# @app.route('/logged_in')
-# def logged_in():
-#     if "email" in session:
-#         email = session["email"]
-#         return render_template('logged_in.html', email=email)
-#     else:
-#         return redirect(url_for("login"))
 
 
 # logout page
@@ -244,7 +208,7 @@ def logout():
 
 
 if __name__ == "__main__":
-    
+
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
 
