@@ -1,4 +1,4 @@
-
+# Import libraries
 from flask import Flask, render_template, request, url_for, redirect, session,jsonify
 from pymongo import MongoClient
 import bcrypt
@@ -42,7 +42,6 @@ def registration():
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
         
-        #createdAt = datetime.datetime.now()
 
         
         user_found = users.find_one({"name": user})
@@ -59,7 +58,7 @@ def registration():
             return render_template('registration.html', message=message)
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'name': user, 'email': email, 'password': hashed, 'balance': 100,"createdAt":createdAt}
+            user_input = {'name': user, 'email': email, 'password': hashed, 'balance': 100}
             users.insert_one(user_input)
             
             user_data = users.find_one({"email": email})
@@ -110,6 +109,7 @@ def login():
 
 
 
+#show-user-profile page 
 
 @app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
 def show_user_profile(id):
@@ -118,11 +118,11 @@ def show_user_profile(id):
     
         # get the id of the user to edit
         userId = request.args.get('form')
-        print("*****",userId)
+        print("*****====",userId)
 
         # get the user details from the db
         user = users.find_one({"_id":ObjectId(id)})
-        print("*****",user)
+        print("*****okay",user)
 
         # direct to edit user page
         return render_template('show-user-profile.html',user=user)  
@@ -135,11 +135,12 @@ def show_user_profile(id):
 
         password = request.form['password']
         print("*****55",password)
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         # update the data in the db
-        users.update_one({"_id":ObjectId(userId)},{"$set":{"password":password}})
+        user=users.update_one({"_id":ObjectId(userId)},{"$set":{"password":hashed}})
 
-        # redirect to home page
+        # redirect to show user profile page
         return render_template('show-user-profile.html',user=user)  
 
 
@@ -150,16 +151,10 @@ def show_user_profile(id):
 
 
 
-
-
-
-
-
-
-
+#### list of users 
 @app.route('/list-users', methods=('GET', 'POST'))
 def list_users():
-    all_users = users.find().sort("createdAt",-1)
+    all_users = users.find()
     return render_template('list-users.html', users=all_users)
 
 
@@ -173,18 +168,38 @@ def list_users():
 
 
 
-#show-user-profile page 
+# Profile  
 
-@app.route('/profile/<id>', methods=('GET', 'POST'))
-def profile(id):
-    if request.method=='POST':
-       users.update_one({"_id": ObjectId(id)},
-                  { "$set": {
-                             "email": request.form.get('email'),
-                              "password": request.form.get('password'),
-                             }
-                 })
-    return render_template('profile.html')
+@app.route('/profile', methods=('GET', 'POST'))
+def profile():
+    if request.method == "GET":
+        #  get the id of the user to edit
+      #  userId = request.args.get('form')
+        email = session["email"]
+
+        print("*****====",email)
+
+        # get the user details from the db
+        user = users.find_one({"email": email})
+        print("*****okay",user)
+        
+        # direct to edit user page
+        return render_template('profile.html',user=user)  
+    
+    elif request.method == "POST":
+        
+        #get the data of the user
+        userId = request.form['_id']
+        print("*****44",userId)
+
+        password = request.form['password']
+        print("*****55")
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        # update the data in the db
+        user=users.update_one({"_id":ObjectId(userId)},{"$set":{"password":hashed}})
+        
+        return render_template('profile.html', user=user)
 
 
 
@@ -192,7 +207,7 @@ def profile(id):
 
 
 
-#show-user-profile page 
+#send money page 
 
 @app.route('/send-money/', methods=('GET', 'POST'))
 def send_money():
