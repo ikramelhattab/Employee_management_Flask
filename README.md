@@ -14,20 +14,24 @@ $ git clone 'https://github.com/ikramelhattab/Aura.se_Tech_Interv.git
 # navigate to the project directory
 $ cd 'Technical_Interview_Ikram_Hattab'
 
-# create the virtual environment 
+```
+
+**Step 2. Create the virtual environment **
+```
+# create a virtual environment called base
 python3 -m venv base
 
 # activate the virtual environment
 source base/bin/activate
 ```
 
-**Step 2. Install dependencies**
+**Step 3. Install dependencies**
 ```
 $ python3 -m pip install -r requirements.txt
 
 ```
 
-**Step 3. Run the server**
+**Step 4. Run the server**
 ```
 $ flask run 
 ```
