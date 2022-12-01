@@ -1,11 +1,12 @@
 # Import libraries
-from flask import Flask, render_template, request, url_for, redirect, session,jsonify
+from flask import Flask, render_template, request, url_for, redirect, session, jsonify
 from pymongo import MongoClient
 import bcrypt
 from bson.objectid import ObjectId
 
 
 app = Flask(__name__)
+
 app.secret_key = "testing"
 
 client = MongoClient('localhost', 27017)
@@ -17,19 +18,7 @@ a = db.users.find()
 len = len(list(a))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+####### Registration#######
 
 @app.route("/registration", methods=['post', 'get'])
 def registration():
@@ -41,12 +30,10 @@ def registration():
         email = request.form.get("email")
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
-        
 
-        
         user_found = users.find_one({"name": user})
         email_found = users.find_one({"email": email})
-        
+
         if user_found:
             message = 'There already is a user by that name'
             return render_template('registration.html', message=message)
@@ -58,24 +45,18 @@ def registration():
             return render_template('registration.html', message=message)
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'name': user, 'email': email, 'password': hashed, 'balance': 100}
+            user_input = {'name': user, 'email': email,
+                          'password': hashed, 'balance': 100}
             users.insert_one(user_input)
-            
+
             user_data = users.find_one({"email": email})
             new_email = user_data['email']
-   
+
             return render_template('registration.html', email=new_email)
     return render_template('registration.html')
 
 
-
-
-
-
-
-
-
-#######Login#######
+####### Login#######
 @app.route("/login", methods=["POST", "GET"])
 def login():
     message = 'Please login to your account'
@@ -86,12 +67,11 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-       
         email_found = users.find_one({"email": email})
         if email_found:
             email_val = email_found['email']
             passwordcheck = email_found['password']
-            
+
             if bcrypt.checkpw(password.encode('utf-8'), passwordcheck):
                 session["email"] = email_val
                 return redirect(url_for('list_users'))
@@ -106,69 +86,51 @@ def login():
     return render_template('login.html', message=message)
 
 
-
-
-
-#show-user-profile page 
+####### Show User Profile #######
 
 @app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
 def show_user_profile(id):
-    
-  if request.method == "GET":
-    
+
+    if request.method == "GET":
+
         # get the id of the user to edit
         userId = request.args.get('form')
-        print("*****====",userId)
+        print("*****====", userId)
 
         # get the user details from the db
-        user = users.find_one({"_id":ObjectId(id)})
-        print("*****okay",user)
+        user = users.find_one({"_id": ObjectId(id)})
+        print("*****okay", user)
 
         # direct to edit user page
-        return render_template('show-user-profile.html',user=user)  
-    
-  elif request.method == "POST":
-    
-        #get the data of the user
+        return render_template('show-user-profile.html', user=user)
+
+    elif request.method == "POST":
+
+        # get the data of the user
         userId = request.form['_id']
-        print("*****44",userId)
+        print("*****44", userId)
 
         password = request.form['password']
-        print("*****55",password)
+        print("*****55", password)
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         # update the data in the db
-        user=users.update_one({"_id":ObjectId(userId)},{"$set":{"password":hashed}})
+        user = users.update_one({"_id": ObjectId(userId)}, {
+                                "$set": {"password": hashed}})
 
         # redirect to show user profile page
-        return render_template('show-user-profile.html',user=user)  
+        return render_template('show-user-profile.html', user=user)
 
 
+####### list of users #######
 
-
-
-
-
-
-
-#### list of users 
 @app.route('/list-users', methods=('GET', 'POST'))
 def list_users():
     all_users = users.find()
     return render_template('list-users.html', users=all_users)
 
 
-
-
-
-
-
-
-
-
-
-
-# Profile  
+####### Profile #######
 
 @app.route('/profile', methods=('GET', 'POST'))
 def profile():
@@ -177,76 +139,100 @@ def profile():
       #  userId = request.args.get('form')
         email = session["email"]
 
-        print("*****====",email)
+        print("*****====", email)
 
         # get the user details from the db
         user = users.find_one({"email": email})
-        print("*****okay",user)
-        
+        print("*****okay", user)
+
         # direct to edit user page
-        return render_template('profile.html',user=user)  
-    
+        return render_template('profile.html', user=user)
+
     elif request.method == "POST":
-        
-        #get the data of the user
+
+        # get the data of the user
         userId = request.form['_id']
-        print("*****44",userId)
+        print("*****44", userId)
 
         password = request.form['password']
         print("*****55")
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
         # update the data in the db
-        user=users.update_one({"_id":ObjectId(userId)},{"$set":{"password":hashed}})
-        
+        user = users.update_one({"_id": ObjectId(userId)}, {
+                                "$set": {"password": hashed}})
+
         return render_template('profile.html', user=user)
 
 
-
-
-
-
-
-#send money page 
+####### Send money  #######
 
 @app.route('/send-money/', methods=('GET', 'POST'))
 def send_money():
+    
+    if request.method == "GET":
+        #  get the id of the user to edit
+      #  userId = request.args.get('form')
+        email = session["email"]
 
- if request.method == 'POST':
-    # users = db.users["name"]
-    # print("********",users)
- 
+        print("*****====", email)
+
+        # get the user details from the db
+        user = users.find_one({"email": email})
+        print("*****okay", user)
+
+        # direct to edit user page
+        return render_template('send-money.html', user=user)
+
+    elif request.method == "POST":
+
+        # get the data of the user
+        userId = request.form['_id']
+        print("*****44", userId)
+
+        balance = request.form['balance']
+        print("*****55")
+        balance =+ int(balance)
+        # update the data in the db
+        user = users.update_one({"_id": ObjectId(userId)}, {
+                                "$set": {"balance": balance}})
         
-    # for x in users.find():
-    #     print(x)
-    n = request.form['name']#form input on initial position
-   
-    routes = db.users#collection where routes are present
-    check_db = users.find()#check all documents in collection
+        users_list = list(users.find())
+        print("xxx", users_list)
+        users_list_name = (users_list[2])
+        print("xxx", users_list_name)
+        # users = db.users["name"]
+        # print("********",users)
+
+        # for x in users.find():
+        #     print(x)
+        
+        name = request.form['name']  # form input on initial position
+
+        check_db = users.find()  # check all documents in collection
+        print("=======",check_db)
+        for i in check_db:
+            print("okay")
+            print("i['name'])",i['name'])
 
 
-    for record in check_db:
-        if (n in record['name']):
-            print(record['name'])
-            print(n)
-            return render_template('send-money.html')
-        else:
-            return 'sorry route not found'
- return render_template('send-money.html')
+            if (name in i['name']):
+                print("2",name)
+                return render_template('send-money.html',user=name)
+            else:
+                return 'sorry route not found'
 
 
+            return render_template('send-money.html', user=user)
+        
+     
+    return render_template('send-money.html')
 
 
+       
 
 
-
-
-
-
-
-
-
-#logged_in page 
+# logged_in page
 
 # @app.route('/logged_in')
 # def logged_in():
@@ -257,16 +243,7 @@ def send_money():
 #         return redirect(url_for("login"))
 
 
-
-
-
-
-
-
-
-
-
-#logout page 
+# logout page
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     if "email" in session:
@@ -276,18 +253,8 @@ def logout():
         return render_template('login.html')
 
 
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
-    # Quick test configuration. Please use proper Flask configuration options
-    # in production settings, and use a separate file or environment variables
-    # to manage the secret key!
+    
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
 

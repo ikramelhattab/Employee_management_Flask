@@ -10,12 +10,14 @@
     <thead><tr>
         <th>Name</th>
         <th>Description</th>
+        <th>Balance</th>
+
     </tr>
 </thead>
     <tbody>
         {% for user in users %}
 
-    <tr><td>{{ user['name'] }} </td><td> {{ user['email'] }}</td></tr>
+    <tr><td>{{ user['name'] }} </td><td> {{ user['email'] }}</td><td> {{ user['balance'] }}</td></tr>
     {% endfor %}
 
     </tbody>

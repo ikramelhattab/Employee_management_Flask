@@ -11,17 +11,23 @@
 <div class="login-container">
   <div class="login-form">
 
-<form action="/send-money/" method="post">
-  <h1>Choose your user:</h1>
+<form action="/send-money/" method="POST">
+  <input type="hidden" name="_id" value="{{ user._id }}" />
+
+  <label>Choose your user:</label>
+  {% for user in users %}
+
+  <tr><td>{{ user['name'] }} </td><td> {{ user['email'] }}</td></tr>
+  {% endfor %}
 
     <div class="form-group">
-      <input type="text" class="form-control" name="name" placeholder="Name" size="20" />
+      <input type="text" class="form-control" name="name" value="{{ user['name'] }} "placeholder="Name" size="20" />
     </div>
   <button type="submit" class="btn btn-primary">Search</button>
 
   <div class="form-group">
         <label for="InputBalance"></label>
-        <input name="number" class="form-control" id="InputBalance"  placeholder="Enter balance">
+        <input name="balance" class="form-control" id="balance" type="number" placeholder="Enter balance" value="">
         <small id="balanceHelp" class="form-text text-muted">Please enter your balance</small>
   </div>
   <button type="submit" class="btn btn-primary">Send money</button>
