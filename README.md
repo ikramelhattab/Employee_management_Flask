@@ -16,7 +16,7 @@ $ cd 'Technical_Interview_Ikram_Hattab'
 
 ```
 
-**Step 2. Create the virtual environment **
+**Step 2. Create the virtual environment**
 ```
 # create a virtual environment called base
 python3 -m venv base
