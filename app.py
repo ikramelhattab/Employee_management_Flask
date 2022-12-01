@@ -64,7 +64,7 @@ def registration():
             user_data = users.find_one({"email": email})
             new_email = user_data['email']
    
-            return render_template('profile.html', email=new_email)
+            return render_template('registration.html', email=new_email)
     return render_template('registration.html')
 
 
