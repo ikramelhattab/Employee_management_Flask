@@ -12,7 +12,6 @@ $ git clone 'https://github.com/ikramelhattab/Aura.se_Tech_Interv.git
 # navigate to the project directory
 $ cd 'Technical_Interview_Ikram_Hattab'
 ```
-
 **Step 2. Create the virtual environment**
 ```
 # create a virtual environment called base
@@ -20,6 +19,7 @@ python3 -m venv base
 # activate the virtual environment
 source base/bin/activate
 ```
+
 
 **Step 3. Install dependencies**
 ```
