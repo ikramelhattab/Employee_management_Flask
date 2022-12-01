@@ -1,4 +1,4 @@
-## Getting started with node js project
+## Getting started with Flask project
 
 
 **Step 0. Install mongoDB in your machine**
