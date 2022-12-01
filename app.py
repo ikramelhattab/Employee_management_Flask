@@ -1,7 +1,8 @@
 
-from flask import Flask, render_template, request, url_for, redirect, session
+from flask import Flask, render_template, request, url_for, redirect, session,jsonify
 from pymongo import MongoClient
 import bcrypt
+from bson.objectid import ObjectId
 
 
 app = Flask(__name__)
@@ -12,21 +13,41 @@ client = MongoClient('localhost', 27017)
 db = client.Technical_Interview
 users = db.users
 
+a = db.users.find()
+len = len(list(a))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @app.route("/registration", methods=['post', 'get'])
 def registration():
     message = ''
     if "email" in session:
-        return redirect(url_for("logged_in"))
+        return redirect(url_for("profile"))
     if request.method == "POST":
         user = request.form.get("fullname")
         email = request.form.get("email")
-        
         password1 = request.form.get("password1")
         password2 = request.form.get("password2")
         
+        #createdAt = datetime.datetime.now()
+
+        
         user_found = users.find_one({"name": user})
         email_found = users.find_one({"email": email})
+        
         if user_found:
             message = 'There already is a user by that name'
             return render_template('registration.html', message=message)
@@ -38,14 +59,21 @@ def registration():
             return render_template('registration.html', message=message)
         else:
             hashed = bcrypt.hashpw(password2.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'name': user, 'email': email, 'password': hashed}
+            user_input = {'name': user, 'email': email, 'password': hashed, 'balance': 100,"createdAt":createdAt}
             users.insert_one(user_input)
             
             user_data = users.find_one({"email": email})
             new_email = user_data['email']
    
-            return render_template('logged_in.html', email=new_email)
+            return render_template('profile.html', email=new_email)
     return render_template('registration.html')
+
+
+
+
+
+
+
 
 
 #######Login#######
@@ -80,33 +108,149 @@ def login():
 
 
 
-# @app.route('/registration', methods=('GET', 'POST'))
-# def registration():
-#     if request.method=='POST':
-#         username = request.form['username']
-#         email = request.form['email']
-#         password = request.form['password']
-#         users.insert_one({'username': username, 'email': email, 'password': password})
-#         return redirect(url_for('registration'))
 
-#     return render_template('registration.html')
+
+
+@app.route('/profile', methods=('GET', 'POST'))
+def profile():
+    
+  if request.method == "GET":
+    
+        # get the id of the user to edit
+        userId = request.args.get('form')
+        print("*****",userId)
+
+        # get the user details from the db
+        user = users.find_one({"_id":ObjectId(userId)})
+
+        # direct to edit user page
+        return render_template('profile.html',user=user)  
+    
+  elif request.method == "POST":
+    
+        #get the data of the user
+        userId = request.form['_id']
+        print("*****44",userId)
+
+        password = request.form['password']
+        print("*****55",password)
+
+        # update the data in the db
+        users.update_one({"_id":ObjectId(userId)},{"$set":{"password":password}})
+
+        # redirect to home page
+        return render_template('profile.html',user=user)  
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 @app.route('/list-users', methods=('GET', 'POST'))
 def list_users():
-    all_users = users.find()
+    all_users = users.find().sort("createdAt",-1)
     return render_template('list-users.html', users=all_users)
 
 
-@app.route('/logged_in')
-def logged_in():
-    if "email" in session:
-        email = session["email"]
-        return render_template('logged_in.html', email=email)
-    else:
-        return redirect(url_for("login"))
 
+
+
+
+
+
+
+
+
+
+#show-user-profile page 
+
+@app.route('/show-user-profile/<id>', methods=('GET', 'POST'))
+def show_user_profile(id):
+    if request.method=='POST':
+       users.update_one({"_id": ObjectId(id)},
+                  { "$set": {
+                             "email": request.form.get('email'),
+                              "password": request.form.get('password'),
+                             }
+                 })
+    return render_template('show-user-profile.html')
+
+
+
+
+
+
+
+#show-user-profile page 
+
+@app.route('/send-money/', methods=('GET', 'POST'))
+def send_money():
+
+ if request.method == 'POST':
+    # users = db.users["name"]
+    # print("********",users)
+ 
+        
+    # for x in users.find():
+    #     print(x)
+    n = request.form['name']#form input on initial position
+   
+    routes = db.users#collection where routes are present
+    check_db = users.find()#check all documents in collection
+
+
+    for record in check_db:
+        if (n in record['name']):
+            print(record['name'])
+            print(n)
+            return render_template('send-money.html')
+        else:
+            return 'sorry route not found'
+ return render_template('send-money.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+#logged_in page 
+
+# @app.route('/logged_in')
+# def logged_in():
+#     if "email" in session:
+#         email = session["email"]
+#         return render_template('logged_in.html', email=email)
+#     else:
+#         return redirect(url_for("login"))
+
+
+
+
+
+
+
+
+
+
+
+#logout page 
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     if "email" in session:
@@ -116,6 +260,14 @@ def logout():
         return render_template('login.html')
 
 
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     # Quick test configuration. Please use proper Flask configuration options
     # in production settings, and use a separate file or environment variables
@@ -123,7 +275,7 @@ if __name__ == "__main__":
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
 
-   # session.init_app(app)
+    session.init_app(app)
 
     app.debug = True
     app.run()
