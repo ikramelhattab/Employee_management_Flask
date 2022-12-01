@@ -8,7 +8,6 @@ You can find installation instructions on the official docs [here](https://docs.
 **Step 1. Clone the project into a fresh folder**
 ```
 # clone the github repo
-
 $ git clone 'https://github.com/ikramelhattab/Aura.se_Tech_Interv.git
 
 # navigate to the project directory
