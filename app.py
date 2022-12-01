@@ -170,63 +170,53 @@ def profile():
 @app.route('/send-money/', methods=('GET', 'POST'))
 def send_money():
     
+    
     if request.method == "GET":
-        #  get the id of the user to edit
-      #  userId = request.args.get('form')
-        email = session["email"]
+        
+        email =  session["email"]
+        
 
         print("*****====", email)
+        users = db.users
 
         # get the user details from the db
-        user = users.find_one({"email": email})
+        user = users.find()
         print("*****okay", user)
 
         # direct to edit user page
-        return render_template('send-money.html', user=user)
+        return render_template('send-money.html',user=user)
 
     elif request.method == "POST":
 
         # get the data of the user
-        userId = request.form['_id']
-        print("*****44", userId)
+        userId = request.form['_id']        
 
-        balance = request.form['balance']
-        print("*****55")
-        balance =+ int(balance)
+        balanceAdded = request.form['balance']
+        newBalance = int(100) + int(balanceAdded)
+        
         # update the data in the db
+        users = db.users
         user = users.update_one({"_id": ObjectId(userId)}, {
-                                "$set": {"balance": balance}})
+                                 "$set": {"balance": newBalance}})
         
         users_list = list(users.find())
-        print("xxx", users_list)
         users_list_name = (users_list[2])
-        print("xxx", users_list_name)
-        # users = db.users["name"]
-        # print("********",users)
-
-        # for x in users.find():
-        #     print(x)
+        users = db.users["name"]
+      
         
         name = request.form['name']  # form input on initial position
 
         check_db = users.find()  # check all documents in collection
-        print("=======",check_db)
         for i in check_db:
-            print("okay")
-            print("i['name'])",i['name'])
+             if (name in i['name']):
+        #         print("2",name)
+                 return render_template('send-money.html',user=user)
+             else:
+                 return 'sorry route not found'
 
-
-            if (name in i['name']):
-                print("2",name)
-                return render_template('send-money.html',user=name)
-            else:
-                return 'sorry route not found'
-
-
-            return render_template('send-money.html', user=user)
+        return render_template('send-money.html', user=user)
         
      
-    return render_template('send-money.html')
 
 
        
