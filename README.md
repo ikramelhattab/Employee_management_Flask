@@ -27,24 +27,7 @@ $ python3 -m pip install -r requirements.txt
 
 ```
 
-**Step 3. Install external libraries**
-
-This project rely on two external library to works properly `Ghostscript` version `9.25` and `graphicsmagick` version `1.3.35-Q16`
-
-#### Ghostscript 9.52
-
-
-
-
-
-
-**Step 4. Prepare Node.js environment**
-
-Create new file named `.env` in the project root.
-
-Copy the content from the file `.sample-env` to the new created `.env` file.
-
-**Step 5. Run the server**
+**Step 3. Run the server**
 ```
 $ flask run 
 ```
