@@ -1,4 +1,4 @@
-## Getting started with Flask project
+## Employee management project with Flask 
 
 
 **Step 0. Install mongoDB in your machine**
